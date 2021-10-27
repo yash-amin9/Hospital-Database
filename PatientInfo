@@ -1,0 +1,132 @@
+package /*insert name of package here*/;
+
+import.java.sql.*;
+
+public class HospitalProgram
+{
+    private static final String DBURL = "insert path here";
+    
+    private static Connection conn = null;
+    
+    public static void main (String[] args)
+    {
+        createConnection();
+        deletePatients(); //gets rid of existing data in the table 
+        newPatient(1, "Kushal", "Ranpura", "5641239871", "110"); //new patient
+        newPatient(2, "Yash", "Amin", "4623159745", "120"); //new patient
+        newPatient(3, "Mikhail", "Uglava", "1230546987", "130"); //new patient
+        newPatient(4, "Alex", "Zhang", "8769845876", "140"); //new patient
+        updatePatient(4, "Xushuai", "Zhang", "8769845876", "140"); //updates the patient info
+        selectPatients();//See the final table
+    }
+    
+
+    public static void createConnection()
+    {
+            Class.forName("insert path here").newInstance();
+            //Get a connection
+            conn = DriverManager.getConnection(DBURL);
+    }
+    
+    /*
+       prints table
+    */
+    private static void selectPatients()
+    {
+            Statement stmt = conn.createStatement();
+            ResultSet results = stmt.executeQuery("select * from patient");
+            ResultSetMetaData rsmd = results.getMetaData();
+            //Get number of columns in the result set
+            int numberCols = rsmd.getColumnCount();
+            //Print column names as header
+            for (int i = 1; i <= numberCols; i++)
+            {
+                //print Column Names
+                System.out.printf("%12s", rsmd.getColumnLabel(i));
+            }
+            System.out.println();
+            //Print the results
+            while(results.next())
+            {
+                for (int i = 1; i <= numberCols; i++)
+                {
+                    System.out.printf("%12s", results.getString(i));
+                }
+                System.out.println();
+            }
+            results.close();
+            stmt.close();
+    }
+    
+    /*
+       method updates patient if patient ID matches
+    */
+    private static void updatePatient(int patientID, String firstName, String lastName, String phoneNumber, int operationID)
+    {
+            String sql = "UPDATE Patient SET firstName=?, lastName=?, phoneNumber=?, operationID=? WHERE id=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setString(3, phoneNumber);
+            stmt.setInt(4, operationID);
+            stmt.setInt(5, patientID)
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("An existing patient was updated.");
+            }  
+    }
+    
+    /*
+      This method inserts a new patient
+    */
+    private static void newPatient(int patientID, String firstName, String lastName, String phoneNumber, int operationID)
+    {
+            String sql = "INSERT INTO Patient(ID, firstName, lastName, phoneNumber, operationID) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, patientID);
+            stmt.setString(2, firstName);
+            stmt.setString(3, lastName);
+            stmt.setString(4, phoneNumber);
+            stmt.setString(5, operationID):
+            int rowInserted = stmt.executeUpdate();
+            if (rowInserted > 0) {
+                System.out.println("A new patient was inserted.);
+            }
+    }
+    
+    /*
+      method deletes patient if patientID matches
+    */
+    private static void deletePatient(int patientID)
+    {
+            String sql = "DELETE FROM Patient WHERE ID = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, patientID);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("A patient was deleted.");
+            }
+    }
+    
+    /*
+      method deletes all the patients
+    */
+    private static void deletePatients()
+    {
+       
+            String sql = "DELETE FROM Patient";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("All patients are deleted!");
+            }
+        
+        
+    }
+}
+
+    }
+
+
+
+}
