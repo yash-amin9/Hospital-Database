@@ -1,0 +1,206 @@
+/*
+ * Hospital Database Management System.
+ * This class is responsible of getting users data from console,
+ * updating Doctor, Patient and Operation Room Tables. Fetching 
+ * Doctor, Patient and Operation Room Tables Data.
+ * Authors: Kushal Ranpura,Yash Amin, Mikheil Uglava, Xushuai Zhang.
+ * 12/02/2021
+ */
+//package final_project_hospital_database;
+
+import java.util.Scanner; // Import Scanner object for keyboard input.
+
+
+public class HospitalManagementSystemAPP{
+   
+    
+    public static void main(String[] args ){
+       Scanner kb = new Scanner(System.in);
+       printMenu(); // Print a hospital management system menu
+       int menuChoice = kb.nextInt(); // get users choice of a menu
+       
+      
+           
+         initializeDoctor(); // initialize a doctor class
+         initializePatient(); // initialze a patient class
+        
+       
+       
+       //kb.close();// close Scanner object
+       
+    }
+    /**
+     * This class is responsible of displaying database management system's 
+     * menu.
+     */
+    private static void printMenu(){
+        System.out.println("------------------------------------------------");
+        System.out.println("***Welcome to Hospital Management System***");
+        System.out.println("------------------------------------------------");
+        System.out.println("\t\tMain Menu");
+        System.out.println("------------------------------------------------");
+        System.out.println("Enter: " + "\n1. Doctor " + 
+                "\n2. Patient " + "\n3. Operation Room " +"\n4. Exit");
+        System.out.println("------------------------------------------------");
+    }
+    /**
+     * Gets input from the user, patient's full name
+     * date of birth and phone number. 
+     */
+    private static void initializePatient(){
+        Scanner kb = new Scanner(System.in); // Initialize Scanner object for keyboard input
+        Patient patient = new Patient();// Initialize patient object
+        // Create a connection for the patient class
+        patient.createConnoection();
+        System.out.println("------------------------------------------------");
+        System.out.println("Enter: ");
+        System.out.println("1. Add New Patient: ");
+        System.out.println("2. Print Patients List: " +"\n3. Delete patint's information from database:");
+        System.out.println("------------------------------------------------");
+        int menuChoice = getInput(kb); // To hold the number of menu choice
+        boolean isValidInput = false; // Validate input, make sure that correct data is entered
+        
+        while(!isValidInput){
+            if(menuChoice == 1 ){
+            System.out.println("Enter Patient ID: ");
+            int patientID = getInput(kb);
+            System.out.println("Enter patient's full name: ");
+            String name = kb.next(); // patient's full name
+            kb.nextLine();
+            System.out.println("Enter patient's DOB: ");
+            String dob = kb.next();// patient's date of birth
+            
+            System.out.println("Enter patient's phone number: ");
+            String phoneNum = kb.next();// patient's phone number
+            System.out.println("Enter patient's operating room number: ");
+            int roomNumber = getInput(kb);// patient's operating room number
+            // Call addData method from patient class in order to update table fields
+            patient.addData(6,name, dob, phoneNum, roomNumber); // add patient to database
+            System.out.println("Patient successfully added.");
+            isValidInput = true; // jump from the loop
+        }else if(menuChoice == 2 ){
+            System.out.println("------------------------------------------------");
+            System.out.println("*Patients List:");
+            patient.selectContacts();
+            System.out.println("------------------------------------------------");
+            isValidInput = true; // jump from the loop
+        }
+        // Delete patient's information from the table
+        else if(menuChoice == 3){
+             System.out.println("Here is the list of available doctors: ");
+             System.out.println("------------------------------------------------");
+             patient.selectContacts();
+             System.out.println("------------------------------------------------");
+             System.out.println("Enter an integer corresponding to a patient's data you're willing to delete: ");
+             int idToRemove = getInput(kb); // To hold an id of a doctor 
+             patient.deletePatient(idToRemove); // Delete a record
+             System.out.println("Patient's data was successfully removed from the list");
+             isValidInput = true; // jump from the loop
+        }
+        }
+        kb.close(); // close scanner object
+        
+    }
+    /**
+     * Initializes a Doctor object, adds doctor to the database table 
+     * and prints an available doctors list
+     */
+    private static void initializeDoctor(){
+         Scanner kb = new Scanner(System.in); // Initialize Scanner object for keyboard input
+         Doctor doctor = new Doctor(); // Initialize doctor object
+         doctor.createConnection(); // create a connection
+         System.out.println("------------------------------------------------");
+         System.out.println("*Enter: ");
+         System.out.println("1. Add a New Doctor: ");
+         System.out.println("2. Print Doctors List: " +"\n3. Delete doctor's information from the database: ");
+         System.out.println("------------------------------------------------");
+         int menuChoice = getInput(kb); // To hold the number of menu choice
+         boolean isValidInput = false; // Validate input, make sure that correct data is entered
+         while(!isValidInput){
+             // Add a new doctor
+             if(menuChoice == 1 ){
+              System.out.println("Enter Doctor ID: ");
+              int doctID = getInput(kb);
+              System.out.println("Enter Doctor's first name: ");
+              String fName = kb.next(); // First name
+              kb.nextLine();
+              System.out.println("Enter Doctor's last name: ");
+              String lName = kb.next(); // last name
+              System.out.println("Enter Doctor's specialty: ");
+              String specialty = kb.next(); // specialty name
+              System.out.println("Enter operation room number: ");
+              int roomNumber = getInput(kb);; // operating room number
+              doctor.addDoctor(doctID, fName, lName, specialty,roomNumber); // add doctor to database 
+              isValidInput = true; // Jump out from the loop
+        // Print doctors list     
+        }else if(menuChoice == 2  ){ 
+            System.out.println("------------------------------------------------");
+            System.out.println("*Doctors List");
+            doctor.getDoctorsList();
+            System.out.println("------------------------------------------------");
+            isValidInput = true;// Jump out from the loop
+        
+        // Delete doctor data from the table
+        }else if(menuChoice == 3){ 
+             System.out.println("Here is the list of available doctors: ");
+             System.out.println("------------------------------------------------");
+             doctor.getDoctorsList();
+             System.out.println("------------------------------------------------");
+             System.out.println("Enter an integer corresponding to a doctor's data you're willing to delete: ");
+             int idToRemove = getInput(kb); // To hold an id of a doctor 
+             doctor.deleteDoctorInfo(idToRemove); // Delete a record
+             System.out.println("Doctor's data was successfully removed from the list");
+             isValidInput = true;// Jump out from the loop
+             doctor.getDoctorsList();// Print list of doctors after deleting the data.        
+        }
+        
+        else{
+            System.out.println("Error, Please enter 1 or 2.");
+            menuChoice = getInput(kb);
+            isValidInput = false;
+        }
+             
+        }  
+       // kb.close(); // close scanner object 
+    }
+    /**
+     * !!!!! NEEDS WORK !!!!!!!
+     */
+    private static void initializeRoom(){
+        
+    }
+    /**
+     * This method is used for validating user input 
+     * if integer is not inputted code asks user repeatedly to input integer 
+     * @return num Number entered.
+     */
+    private static int getInput(Scanner scanner) {
+		
+	
+	//System.out.println("Enter an integer: ");
+		
+	while(!scanner.hasNextInt()) {	// Wrong input
+            scanner.next(); 
+            System.out.println("ERROR: Please enter an integer only: ");
+			
+	} //Jump out from the loop, correct input, return entered integer.
+	int num = scanner.nextInt();
+        return num;
+	}
+    /**
+     * This method determines if string contains an integer,
+     * it is used to determine user input for patients and doctors first and last names
+     * @param str The string 
+     * @return true if string doesn't contain an integer, otherwise return false.
+     */
+    private static boolean isValidString(String str) {
+	Scanner kb = new Scanner(System.in);
+
+	for(int i =0; i < str.length(); i++) {
+		if(Character.isDigit(str.charAt(i)))
+		    return false;
+	}
+		
+	return true;
+	}
+}
