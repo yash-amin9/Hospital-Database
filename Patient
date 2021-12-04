@@ -1,0 +1,130 @@
+/*
+ * This class is responsible of creating database connection,
+ * setting up tables information, adding and removing patinet information
+ * such as - first, last name and phone number and date of birth.
+ */
+//package final_project_hospital_database;
+
+/**
+ *
+ * @author Kushal Ranpura
+ */
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
+/**
+ *
+ * @author Mikheil Uglava
+ */
+public class Patient { 
+    private static final String DBURL = 
+            "jdbc:derby://localhost:1527/Patient;create=true;user=patient;password=12345678";
+    private static Connection conn = null;
+    public static void main(String[] args){
+        // Setup connetion
+        createConnoection();
+       
+    }
+     /**
+      This method creates a connection to Derby Embedded database
+      It can throw an exception if the db URL is not correct
+      or DB is already accessed by another program (or derby server)
+    */
+    protected static void createConnoection(){
+         try
+        {
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+            //Get a connection
+            conn = DriverManager.getConnection(DBURL);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+    }
+     /**
+      This method prints the whole table to the command line in a tabular format
+    */
+    protected static void selectContacts()
+    {
+        try
+        {
+            java.sql.Statement stmt = conn.createStatement();
+            ResultSet results = stmt.executeQuery("select * from PATIENT");
+            ResultSetMetaData rsmd = results.getMetaData();
+            //Get number of columns in the result set
+            int numberCols = rsmd.getColumnCount();
+            //Print column names as header
+            for (int i = 1; i <= numberCols; i++)
+            {
+                //print Column Names
+                System.out.printf("%12s ", rsmd.getColumnLabel(i));
+            }
+            System.out.println();
+            //Print the results
+            while(results.next())
+            {
+                for (int i = 1; i <= numberCols; i++)
+                {
+                    System.out.printf("%12s ", results.getString(i));
+                }
+                System.out.println();
+            }
+            results.close();
+            stmt.close();
+        }
+        catch (SQLException e)
+        {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+    
+}    
+    // Insert a new record
+    protected static void addData(int ID, String name, String DOB, String number, int roomNumber){
+        try{
+            String sql = "INSERT INTO PATIENT(ID, FULL_NAME,DOB, PHONE_NUMBER, OPERATING_ROOM) VALUES (?,?,?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, ID);
+            stmt.setString(2, name);
+            stmt.setString(3, DOB);
+            stmt.setString(4, number);
+            stmt.setInt(5, roomNumber);
+            int rowInserted = stmt.executeUpdate();
+            if(rowInserted > 0){
+                System.out.println("A new element was added to the table");
+            }
+        }catch(SQLException e){
+            System.out.println("Something went wrong: " + e.getMessage());
+        }
+    }
+    /**
+     * Remove patient from the list
+     * @param ID Patient's ID integer
+     */
+    protected static void deletePatient(int ID)
+    {
+        try
+        {
+            String sql = "DELETE FROM PATIENT WHERE ID = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, ID);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("A patient was successfully deleted");
+            }
+        }
+        catch (SQLException e)
+        {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+    }
+
+}
